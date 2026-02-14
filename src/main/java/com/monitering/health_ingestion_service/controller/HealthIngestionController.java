@@ -19,7 +19,7 @@ public class HealthIngestionController {
 
     @PostMapping("/report")
     public ResponseEntity<Void> reportHealth(@Valid @RequestBody HealthPayload payload) {
-        ingestionService.process(payload);
+        ingestionService.processHealthReport(payload);
         return ResponseEntity.accepted().build();
     }
 
