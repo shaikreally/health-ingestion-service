@@ -1,7 +1,7 @@
 package com.monitering.health_ingestion_service.service;
 
+import monitoring_event_contract.event.HealthEvent;
 import com.monitering.health_ingestion_service.domain.entity.HealthReportEntity;
-import com.monitering.health_ingestion_service.dto.HealthPayload;
 import com.monitering.health_ingestion_service.repository.HealthReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class HealthIngestionService {
 
     private static final String TOPIC = "health-reports";
 
-    public void processHealthReport(HealthPayload payload) {
+    public void processHealthReport(HealthEvent payload) {
 
         HealthReportEntity entity = mapToEntity(payload);
 
@@ -29,7 +29,7 @@ public class HealthIngestionService {
 
         // 2️⃣ Publish event async
         try {
-            kafkaTemplate.send(TOPIC, entity);
+            kafkaTemplate.send(TOPIC, payload);
         } catch (Exception ex) {
             log.error("Kafka publish failed but ingestion persisted", ex);
         }
@@ -39,7 +39,7 @@ public class HealthIngestionService {
                 payload.getServiceName());
     }
 
-    private HealthReportEntity mapToEntity(HealthPayload payload) {
+    private HealthReportEntity mapToEntity(HealthEvent payload) {
 
         HealthReportEntity entity = new HealthReportEntity();
         entity.setId(UUID.randomUUID());
